@@ -16,7 +16,7 @@
     <body>
         <nav class="navbar">
             <!--credits to the navbar creation tutorials in the css file-->
-            <label>OurTaste</label>
+            <label>O-Taste</label>
             {% if session["user_id"] %}
                 <ul>
                     <li><a href="/">Home</a></li>
@@ -31,6 +31,6 @@
                 </ul>
             {% endif %}
         </nav>
-        {% block body %}{% endblock %}
+        {% block main %}{% endblock %}
     </body>
 </html>

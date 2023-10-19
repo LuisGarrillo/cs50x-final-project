@@ -79,6 +79,13 @@ def logout():
 
 #-
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("register.html"), 200
+
 @app.route("/")
 @login_required
 def index():
@@ -86,3 +93,18 @@ def index():
         return render_template("layout.html"), 400
     except Exception:
         return render_template("apology.html"), 400
+    
+@app.route("/search", methods=["GET", "POST"])
+def search():
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("search.html"), 200
+    
+@app.route("/profile", methods=["GET", "POST"])
+def profile():
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("profile.html"), 200
+    
