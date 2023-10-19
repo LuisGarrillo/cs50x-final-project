@@ -90,7 +90,7 @@ def register():
 @login_required
 def index():
     try:
-        return render_template("layout.html"), 400
+        return render_template("index.html"), 400
     except Exception:
         return render_template("apology.html"), 400
     
