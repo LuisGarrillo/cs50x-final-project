@@ -4,7 +4,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required, password_check
+from helpers import apology, login_required, password_check, email_check
 # the code between the #- #- is from the CS50 Finance problem set
 
 # credit to the cs50 team, love you guys! -
@@ -82,7 +82,47 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        pass
+        user = request.form.get("username")
+        repeated_user = db.execute(
+            "select username from users where username = ?", user
+        )
+
+        if repeated_user:
+            return render_template("register.html", status=1), 400
+
+        passw = request.form.get("password")
+        confirm = request.form.get("confirmation")
+
+        if not user or not passw or not confirm:
+            return render_template("register.html", status=3), 400
+
+        valid_pass = password_check(passw)
+
+        if not valid_pass:
+            return render_template("register.html", status=4), 400
+
+        if passw != confirm:
+            return render_template("register.html", status=2), 400
+        new_hash = generate_password_hash(passw)
+
+        birthday = request.form.get("birthday")
+        gender = request.form.get("gender")
+        email = request.form.get("email")
+
+        if not birthday or not gender or not email:
+            return render_template("register.html", status=5), 400
+        
+        email_valid = email_check(email)
+
+        if not email_valid:
+            return render_template("register.html", status=6), 400
+        
+        db.execute("insert into users (username, hash, birthday, gender, email) values(?,?,?,?,?)", user, new_hash, birthday, gender, email)
+
+        result = db.execute("SELECT id FROM users WHERE username = ?", user)
+        session["user_id"] = result[0]["id"]
+        return redirect("/")
+        
     else:
         return render_template("register.html"), 200
 

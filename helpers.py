@@ -71,3 +71,15 @@ def password_check(password):
         return True
     else:
         return False
+
+def email_check(email):
+    email_split = list(email.split("@"))
+    valid = True
+    if not "@" in email:
+        valid = False
+
+    else:
+        if not "." in email_split[1]:
+            valid = False
+
+    return valid
