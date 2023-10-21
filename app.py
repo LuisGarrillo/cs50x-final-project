@@ -139,7 +139,8 @@ def search():
     if request.method == "POST":
         pass
     else:
-        return render_template("search.html"), 200
+        interests = db.execute("SELECT name FROM areas order by name")
+        return render_template("search.html", interests=interests), 200
     
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
