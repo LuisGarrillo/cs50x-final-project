@@ -52,8 +52,8 @@
     border-radius: 12px;
 }
 
-.like_display {
-    display: inline-block;
+.like-display {
+    float: left;
     margin-left: 10px;
 }
 
