@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ username }}'s Profile
+{% endblock %}
+
+{% block JavaScript %}
+{% endblock %}
+
+{% block main %}
+    <div class="mx-4 my-4">
+
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title"> user.username </h1>
+            <h3>Email:  user.email </h3>
+            <br>
+            <h3>Likes: </h3>
+            {% if interests %}
+                {% for interest in user_interests %}
+                    <p> interest.name </p>
+                {% endfor %}
+            {% else %}
+                <p>You have no interests</p>
+            {% endif %}
+        </section>
+
+        <section class="background px-4 py-4 mb-2">
+            <form action="/register" method="post">
+                <h1 class="title">Add some interests!</h1>
+                <div class="mt-2">
+                    <select name="gender" class="form-control w-auto" style="font-size: 20px; text-align:left;" required>
+                        <option disabled selected>Interests List<option>
+                        <!--
+                        {% for interest in interests %}
+                            <option value="{{ interest.name }}">{{ interest.name }}</option>
+                        {% endfor %}
+                        -->
+                    </select>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-primary" type="submit" style="background-color: indianred; border:none; font-size: 20px;">Add interest!</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title">Friends</h1>
+            <!--
+            {% for friend in friends %}
+                <p>{{ friend.name }}</p>
+            {% endfor %}
+            -->
+        </section>
+    </div>
+{% endblock %}
