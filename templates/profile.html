@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ user.username }}'s Profile
+{% endblock %}
+
+{% block JavaScript %}
+{% endblock %}
+
+{% block main %}
+    <div class="mx-4 my-4">
+
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title">Username: {{ user.username }}</h1>
+            <h3>Email: {{ user.email }}</h3>
+            <h3>Likes: </h3>
+            {% if user_interests %}
+                <div class="mb-4">
+                    {% for interest in user_interests %}
+                        <h5 class="like-display"> {{ interest.name }} </h5>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You have no interests</p>
+            {% endif %}
+        </section>
+
+        <section class="background px-4 py-4 mb-2">
+            <form action="/profile" method="post">
+                <h1 class="title">Add some interests!</h1>
+                <div class="mt-2">
+                    <select name="interest" class="form-control w-auto" style="font-size: 20px; text-align:left;" required>
+                        <option disabled selected>Interests List<option> 
+                        {% for interest in interests %}
+                            <option value="{{ interest.name }}">{{ interest.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if status == 1 %}
+                    <p>Select an interest!</p>
+                {% elif status == 2 %}
+                    <p>That interest is not in the list</p>
+                {% elif status == 3 %}
+                    <p>You already added that interest!</p>
+                {% endif %}
+                <div class="mt-2">
+                    <button class="btn btn-primary" type="submit" style="background-color: indianred; border:none; font-size: 20px;">Add interest!</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title">Friends</h1>
+            {% if friends %}
+                {% for friend in friends %}
+                    <p>{{ friend.name }}</p>
+                {% endfor %}    
+            {% else %}
+                <p>You have no friends</p>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

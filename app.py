@@ -143,8 +143,75 @@ def search():
     
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
+    def set_profile():
+        rows = db.execute("SELECT username, email FROM users WHERE id = ?", session["user_id"])
+        user = rows[0]
+
+        user_interests = db.execute("SELECT a.name FROM interests i join areas a on a.id = i.areaId WHERE i.userId = ?", session["user_id"])
+        interests = db.execute("SELECT name FROM areas order by name")
+
+        friends = db.execute("select u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", session["user_id"])
+        return user, user_interests, interests, friends
+
     if request.method == "POST":
-        pass
+        user, user_interests, interests, friends = set_profile()
+        
+        interest = request.form.get("interest")
+
+        if not interest:
+            return render_template(
+            "profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            friends=friends,
+            status=1
+            ), 200
+        
+        area = db.execute("SELECT id FROM areas WHERE name = ?", interest)
+
+        if not area:
+            return render_template(
+            "profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            friends=friends,
+            status=2
+            ), 200
+        
+        areaId = area[0]["id"]
+
+        check = db.execute("select * from interests where userId = ? and areaId = ?", session["user_id"], areaId)
+
+        if check:
+            return render_template(
+            "profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            friends=friends,
+            status=3
+            ), 200
+
+        db.execute("INSERT INTO interests (userId, areaId) VALUES (?,?)", session["user_id"], areaId)
+        user_interests = db.execute("SELECT a.name FROM interests i join areas a on a.id = i.areaId WHERE i.userId = ?", session["user_id"])
+        return render_template(
+            "profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            friends=friends
+            ), 200
+    
     else:
-        return render_template("profile.html"), 200
+        user, user_interests, interests, friends = set_profile()
+        
+        return render_template(
+            "profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            friends=friends
+            ), 200
     
