@@ -13,10 +13,10 @@
             <h1 class="title">Search for a friend!</h1>
             <form action="/search" method="post">
                 <div class="mt-2">
-                    <input class="form-control" type="text" name="search" placeholder="Username" required>
+                    <input class="form-control" type="text" name="search" placeholder="Username">
                 </div>
                 <div class="mt-2">
-                    <select name="interest" class="form-control mx-auto w-auto" style="font-size: 20px;" required>
+                    <select name="interest" class="form-control mx-auto w-auto" style="font-size: 20px;">
                         <option disabled selected>Filter by interest<option> 
                         {% for interest in interests %}
                             <option value="{{ interest.name }}">{{ interest.name }}</option>
@@ -24,8 +24,6 @@
                     </select>
                 </div>
                 {% if status == 1 %}
-                    <p>Select an interest!</p>
-                {% elif status == 2 %}
                     <p>That interest is not in the list</p>
                 {% endif %}
                 <div class="mt-2">
@@ -34,19 +32,21 @@
             </form>
         </section>
         {% if search %}
-            {% if results %}
-                <h2 class="title">Your Results:</h2>
-                <table class="table">
-                {% for result in results %}
-                    <tr>
-                        <td><a class="search-name" href="/other_profile">{{ result.name }}</a></td>
-                        <td>{{ result.email }}</td>
-                    </tr>
-                {% endfor %}
-                </table>
-            {% else %}
-                <h2 class="title">No results found</h2>
-            {% endif %}
+            <section class="background px-4 py-4 mb-2 text-center">
+                {% if results %}
+                    <h2 class="title">Your Results:</h2>
+                    <table class="table">
+                    {% for result in results %}
+                        <tr>
+                            <td><a class="search-name" href="/other_profile">{{ result.username }}</a></td>
+                            <td>Interested in: {{result.interest}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <h2 class="title">No results found</h2>
+                {% endif %}
+            </section>
         {% endif %}
     </div>
 {% endblock %}
