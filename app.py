@@ -137,9 +137,52 @@ def index():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
-        pass
+        interests = db.execute("SELECT name FROM areas order by name")
+
+        interest = request.form.get("interest")
+        interest_query = ''
+
+        if interest:
+            print(interest)
+            area = db.execute("SELECT id FROM areas WHERE name = ?", interest)
+
+            if not area:
+                return render_template("search.html",interests=interests, status=1), 200
+            
+            areaId = str(area[0]["id"])
+
+            interest_query = ' and i.areaId = ' + areaId
+
+        username = request.form.get("username")
+        user_query = ''
+        if username:
+
+            if username.rfind("/'") != -1 or username.rfind("%") != -1:
+                return render_template("search.html",interests=interests, status=2), 400
+
+            username = str("\'" + username + "\'")
+            user_query = ' and u.username like %' + username + '%'
+
+        sql = "select distinct u.id, u.username from users u join interests i on i.userId = u.id where not u.id = " + str(session["user_id"])
+
+        sql += interest_query + user_query
+
+        results = db.execute(sql)
+        print(sql)
+       
+        if results:
+            for result in results:
+                user_interests = db.execute("select a.name from interests i join areas a on a.id = i.areaId where i.userId = ?", result["id"])
+                result["interest"] = ""
+                for interest in user_interests:
+                    result["interest"] += interest["name"] + ", "
+                result["interest"] = result["interest"].rstrip(", ")
+
+        return render_template("search.html",interests=interests, search=True, results=results), 200 
+        
     else:
-        return render_template("search.html"), 200
+        interests = db.execute("SELECT name FROM areas order by name")
+        return render_template("search.html", interests=interests), 200
     
 @app.route("/profile", methods=["GET", "POST"])
 def profile():

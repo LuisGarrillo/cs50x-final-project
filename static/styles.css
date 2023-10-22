@@ -54,10 +54,20 @@
 
 .like-display {
     float: left;
-    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .title {
     color: indianred;
     font-weight: bold;
+}
+
+.search-name {
+    color: indianred;
+    text-decoration: none;
+}
+
+.search-name a:hover {
+    color: rgb(206, 75, 75);
+    transition: .4s;
 }
