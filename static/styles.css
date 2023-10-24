@@ -65,6 +65,7 @@
 .search-name {
     color: indianred;
     font-size: 25px;
+    font-weight: bold;
     text-decoration: none;
     background-color: rgb(235, 234, 234);
     border:none;
