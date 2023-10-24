@@ -64,10 +64,13 @@
 
 .search-name {
     color: indianred;
+    font-size: 25px;
     text-decoration: none;
+    background-color: rgb(235, 234, 234);
+    border:none;
 }
 
-.search-name a:hover {
+.search-name button:hover {
     color: rgb(206, 75, 75);
     transition: .4s;
 }

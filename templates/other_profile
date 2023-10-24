@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ user.username }}'s Profile
+{% endblock %}
+
+{% block JavaScript %}
+{% endblock %}
+
+{% block main %}
+    <div class="mx-4 my-4">
+        
+    </div>
+{% endblock %}
