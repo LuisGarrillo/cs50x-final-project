@@ -38,8 +38,17 @@
                     <table class="table">
                     {% for result in results %}
                         <tr>
-                            <td><a class="search-name" href="/other_profile">{{ result.username }}</a></td>
-                            <td>Interested in: {{result.interest}}</td>
+                            <td>
+                                <form action="/other_profile">
+                                    <input type="hidden" name="userId" value="{{ result.id }}">
+                                    <button class="search-name" type="submit">{{ result.username }}</button>
+                                </form>
+                            </td>
+                            {% if result.interest %}
+                                <td>Interested in: {{result.interest}}</td>
+                            {% else %}
+                                <td>Interested in: Nothing</td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </table>

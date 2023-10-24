@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ user.username }}'s Profile
+{% endblock %}
+
+{% block JavaScript %}
+{% endblock %}
+
+{% block main %}
+    <div class="mx-4 my-4">
+        <section class="background px-4 py-4 mb-2">
+
+            <h1 class="title">Username: {{ user.username }}</h1>
+            {% if friends %}
+                <h3>Email: {{ user.email }}</h3>
+            {% endif %}
+
+            <h3>Likes: </h3>
+            {% if user_interests %}
+                <div class="mb-4">
+                    {% for interest in user_interests %}
+                        <h5 class="like-display"> {{ interest.name }} </h5>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>They have no interests</p>
+            {% endif %}
+            <br>
+            <div class="text-left">
+                {% if friends %}
+                    <p>friends since {{ user.date }}</p>
+                {% else %}
+                    {% if not request_sent %}
+                        <form>
+                            <input type="hidden" name="userId" value="{{ id }}">
+                            <button class="btn btn-primary-name" type="submit" style="background-color: indianred; color: white; border:none; font-size: 20px;">Send a friend request!</button>
+                        </form>
+                    {% else %}
+                        <p>Friend request sent</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </section>
+    </div>
+{% endblock %}

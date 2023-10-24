@@ -258,3 +258,45 @@ def profile():
             friends=friends
             ), 200
     
+@app.route("/other_profile", methods=["GET", "POST"])
+def other_profile():
+    def set_profile(id):
+        friends = False
+        request_sent = False
+
+        rows = db.execute("SELECT username, email FROM users WHERE id = ?", id)
+        user = rows[0]
+
+        user_interests = db.execute("SELECT a.name FROM interests i join areas a on a.id = i.areaId WHERE i.userId = ?", id)
+        interests = db.execute("SELECT name FROM areas order by name")
+
+        user_friends = db.execute("select u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", id)
+
+        rows = db.execute("select id from connections where userId = ? and connectionId = ?", id, session["user_id"])
+        if rows:
+            friends = True
+
+        rows = db.execute("select id from friendRequest where senderId = ? and receiverId = ?", session["user_id"], id)
+        if rows:
+            request_sent = True
+
+        return user, user_interests, interests, user_friends, friends, request_sent
+    
+    if request.method == "POST":
+        pass
+
+    else:
+        id = request.args.get("userId")
+
+        user, user_interests, interests, user_friends, friends, request_sent = set_profile(id)
+
+        return render_template(
+            "other_profile.html", 
+            user=user, 
+            user_interests=user_interests, 
+            interests=interests, 
+            user_friends=user_friends,
+            id=id,
+            friends=friends,
+            request_sent=request_sent
+            ), 200
