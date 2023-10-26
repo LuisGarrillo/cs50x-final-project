@@ -29,6 +29,7 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -67,6 +68,7 @@ def login():
     else:
         return render_template("login.html")
     
+
 @app.route("/logout")
 def logout():
     """Log user out"""
@@ -126,6 +128,7 @@ def register():
     else:
         return render_template("register.html"), 200
 
+
 @app.route("/")
 @login_required
 def index():
@@ -134,6 +137,7 @@ def index():
     except Exception:
         return render_template("apology.html"), 400
     
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
@@ -184,6 +188,7 @@ def search():
         interests = db.execute("SELECT name FROM areas order by name")
         return render_template("search.html", interests=interests), 200
     
+
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
     def set_profile():
@@ -258,6 +263,7 @@ def profile():
             friends=friends
             ), 200
     
+
 @app.route("/other_profile")
 def other_profile():
     def set_profile(id):
@@ -304,6 +310,15 @@ def other_profile():
         request_received=request_received
         ), 200
 
+
+@app.route("/requests")
+def requests():
+    user = db.execute("select username from users where id = ?", session["user_id"])
+    requests = db.execute("select u.username, u.id from users u join friendRequest f on f.senderId = u.id where f.receiverId = ?", session["user_id"])
+
+    return render_template("requests.html", requests=requests, user=user), 200
+
+
 @app.route("/send_request", methods=["GET", "POST"])
 def send_request():
     if request.method == "POST":
@@ -315,7 +330,8 @@ def send_request():
         db.execute("INSERT INTO friendRequest (senderId, receiverId, date, time) VALUES (?,?, DATE('now'), TIME('now'))", session["user_id"], friend_id)
 
         return redirect("/other_profile?userId=" + friend_id)
-    
+
+
 @app.route("/accept_request", methods=["GET", "POST"])
 def accept_request():
     if request.method == "POST":
@@ -331,7 +347,8 @@ def accept_request():
         db.execute("delete from friendRequest where senderId = ? and receiverId = ?", friend_id, session["user_id"])
 
         return redirect("/other_profile?userId=" + friend_id)
-    
+
+
 @app.route("/delete_friend", methods=["GET", "POST"])
 def delete_friend():
     if request.method == "POST":

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ user.username }}'s Friend requests
+{% endblock %}
+
+{% block JavaScript %}
+{% endblock %}
+
+{% block main %}
+    <div class="mx-4 my-4">
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title">Friend requests</h1>
+            {% if requests %}
+                <div class="mb-4">
+                    {% for request in requests %}
+                    <div class="mb-4">
+                        <form action="/other_profile" style="float:left">
+                            <input type="hidden" name="userId" value="{{ request.id }}">
+                            <button class="search-name" type="submit">{{ request.username }}</button>
+                        </form>
+                        <form action="/accept_request"  method="post">
+                            <input type="hidden" name="userId" value="{{ request.id }}">
+                            <button class="btn btn-primary-name" type="submit" style="background-color: indianred; color: white; border:none; font-size: 20px;">Accept friend request!</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No friend requests</p>
+            {% endif %}
+    </div>
+{% endblock %}
