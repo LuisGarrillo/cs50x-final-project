@@ -163,7 +163,7 @@ def search():
             username = str("\'" + username + "\'")
             user_query = ' and u.username like %' + username + '%'
 
-        sql = "select distinct u.id, u.username from users u join interests i on i.userId = u.id where not u.id = " + str(session["user_id"])
+        sql = "select distinct u.id, u.username from users u  left join interests i on i.userId = u.id where not u.id = " + str(session["user_id"])
 
         sql += interest_query + user_query
 
@@ -258,11 +258,12 @@ def profile():
             friends=friends
             ), 200
     
-@app.route("/other_profile", methods=["GET", "POST"])
+@app.route("/other_profile")
 def other_profile():
     def set_profile(id):
         friends = False
         request_sent = False
+        request_received = False
 
         rows = db.execute("SELECT username, email FROM users WHERE id = ?", id)
         user = rows[0]
@@ -272,31 +273,75 @@ def other_profile():
 
         user_friends = db.execute("select u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", id)
 
-        rows = db.execute("select id from connections where userId = ? and connectionId = ?", id, session["user_id"])
+        rows = db.execute("select id, date from connections where userId = ? and connectionId = ?", id, session["user_id"])
         if rows:
             friends = True
+            user["date"] = rows[0]["date"]
+        else:
+            rows = db.execute("select id from friendRequest where senderId = ? and receiverId = ?", session["user_id"], id)
+            if rows:
+                request_sent = True
+            else:
+                rows = db.execute("select id from friendRequest where senderId = ? and receiverId = ?", id, session["user_id"])
+                if rows:
+                    request_received = True
 
-        rows = db.execute("select id from friendRequest where senderId = ? and receiverId = ?", session["user_id"], id)
-        if rows:
-            request_sent = True
+        return user, user_interests, interests, user_friends, friends, request_sent, request_received
+   
+    id = request.args.get("userId")
 
-        return user, user_interests, interests, user_friends, friends, request_sent
-    
+    user, user_interests, interests, user_friends, friends, request_sent, request_received = set_profile(id)
+
+    return render_template(
+        "other_profile.html", 
+        user=user, 
+        user_interests=user_interests, 
+        interests=interests, 
+        user_friends=user_friends,
+        id=id,
+        friends=friends,
+        request_sent=request_sent,
+        request_received=request_received
+        ), 200
+
+@app.route("/send_request", methods=["GET", "POST"])
+def send_request():
     if request.method == "POST":
-        pass
+        friend_id = request.form.get("userId")
 
-    else:
-        id = request.args.get("userId")
+        if not friend_id:
+            return render_template("apology.html"), 400
+        
+        db.execute("INSERT INTO friendRequest (senderId, receiverId, date, time) VALUES (?,?, DATE('now'), TIME('now'))", session["user_id"], friend_id)
 
-        user, user_interests, interests, user_friends, friends, request_sent = set_profile(id)
+        return redirect("/other_profile?userId=" + friend_id)
+    
+@app.route("/accept_request", methods=["GET", "POST"])
+def accept_request():
+    if request.method == "POST":
+        friend_id = request.form.get("userId")
 
-        return render_template(
-            "other_profile.html", 
-            user=user, 
-            user_interests=user_interests, 
-            interests=interests, 
-            user_friends=user_friends,
-            id=id,
-            friends=friends,
-            request_sent=request_sent
-            ), 200
+        if not friend_id:
+            return render_template("apology.html"), 400
+        
+        db.execute("INSERT INTO connections (userId, connectionId, date, time) VALUES (?,?, DATE('now'), TIME('now'))", session["user_id"], friend_id)
+        db.execute("INSERT INTO connections (userId, connectionId, date, time) VALUES (?,?, DATE('now'), TIME('now'))", friend_id, session["user_id"])
+
+        db.execute("delete from friendRequest where senderId = ? and receiverId = ?", session["user_id"], friend_id)
+        db.execute("delete from friendRequest where senderId = ? and receiverId = ?", friend_id, session["user_id"])
+
+        return redirect("/other_profile?userId=" + friend_id)
+    
+@app.route("/delete_friend", methods=["GET", "POST"])
+def delete_friend():
+    if request.method == "POST":
+        friend_id = request.form.get("userId")
+
+        if not friend_id:
+            return render_template("apology.html"), 400
+        
+        db.execute("delete from connections where userId = ? and connectionId = ?", session["user_id"], friend_id)
+        db.execute("delete from connections where userId = ? and connectionId = ?", friend_id, session["user_id"])
+
+        return redirect("/other_profile?userId=" + friend_id)
+    
