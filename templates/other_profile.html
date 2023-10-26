@@ -30,9 +30,18 @@
             <div class="text-left">
                 {% if friends %}
                     <p>friends since {{ user.date }}</p>
+                    <form action="/delete_friend"  method="post">
+                        <input type="hidden" name="userId" value="{{ id }}">
+                        <button class="btn btn-primary-name" type="submit" style="background-color: indianred; color: white; border:none; font-size: 20px;">Delete friend</button>
+                    </form>
                 {% else %}
-                    {% if not request_sent %}
-                        <form>
+                    {% if request_received  %}
+                        <form action="/accept_request"  method="post">
+                            <input type="hidden" name="userId" value="{{ id }}">
+                            <button class="btn btn-primary-name" type="submit" style="background-color: indianred; color: white; border:none; font-size: 20px;">Accept friend request!</button>
+                        </form> 
+                    {% elif not request_sent %}
+                        <form action="/send_request"  method="post">
                             <input type="hidden" name="userId" value="{{ id }}">
                             <button class="btn btn-primary-name" type="submit" style="background-color: indianred; color: white; border:none; font-size: 20px;">Send a friend request!</button>
                         </form>
