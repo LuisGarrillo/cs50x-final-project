@@ -376,7 +376,7 @@ def post():
     if request.method == "POST":
         post = request.form.get("post")
 
-        if not post:
+        if not post or post.isspace():
             return render_template("apology.html"), 400
         
         if len(post) > 1000:
