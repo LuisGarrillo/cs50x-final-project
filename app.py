@@ -198,7 +198,7 @@ def profile():
         user_interests = db.execute("SELECT a.name FROM interests i join areas a on a.id = i.areaId WHERE i.userId = ?", session["user_id"])
         interests = db.execute("SELECT name FROM areas order by name")
 
-        friends = db.execute("select u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", session["user_id"])
+        friends = db.execute("select u.id, u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", session["user_id"])
         return user, user_interests, interests, friends
 
     if request.method == "POST":
@@ -277,7 +277,7 @@ def other_profile():
         user_interests = db.execute("SELECT a.name FROM interests i join areas a on a.id = i.areaId WHERE i.userId = ?", id)
         interests = db.execute("SELECT name FROM areas order by name")
 
-        user_friends = db.execute("select u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", id)
+        user_friends = db.execute("select u.id, u.username from users u join connections c on c.connectionId = u.id where c.userId = ?", id)
 
         rows = db.execute("select id, date from connections where userId = ? and connectionId = ?", id, session["user_id"])
         if rows:
@@ -295,6 +295,9 @@ def other_profile():
         return user, user_interests, interests, user_friends, friends, request_sent, request_received
    
     id = request.args.get("userId")
+
+    if int(id) == int(session["user_id"]):
+        return redirect("/profile")
 
     user, user_interests, interests, user_friends, friends, request_sent, request_received = set_profile(id)
 

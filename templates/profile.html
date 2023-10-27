@@ -53,7 +53,12 @@
             <h1 class="title">Friends</h1>
             {% if friends %}
                 {% for friend in friends %}
-                    <p>{{ friend.username }}</p>
+                <div class="mb-4">
+                    <form action="/other_profile" style="float:left">
+                        <input type="hidden" name="userId" value="{{ friend.id }}">
+                        <button class="search-name" type="submit">{{ friend.username }}</button>
+                    </form>
+                </div>
                 {% endfor %}    
             {% else %}
                 <p>You have no friends</p>

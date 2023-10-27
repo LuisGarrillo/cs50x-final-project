@@ -51,5 +51,21 @@
                 {% endif %}
             </div>
         </section>
+
+        <section class="background px-4 py-4 mb-2">
+            <h1 class="title">Friends</h1>
+            {% if user_friends %}
+                {% for friend in user_friends %}
+                    <div class="mb-4">
+                        <form action="/other_profile" style="float:left">
+                            <input type="hidden" name="userId" value="{{ friend.id }}">
+                            <button class="search-name" type="submit">{{ friend.username }}</button>
+                        </form>
+                    </div>
+                {% endfor %}    
+            {% else %}
+                <p>You have no friends</p>
+            {% endif %}
+        </section>
     </div>
 {% endblock %}
