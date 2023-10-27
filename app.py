@@ -313,7 +313,8 @@ def other_profile():
 
 @app.route("/requests")
 def requests():
-    user = db.execute("select username from users where id = ?", session["user_id"])
+    rows = db.execute("select username from users where id = ?", session["user_id"])
+    user = rows[0]
     requests = db.execute("select u.username, u.id from users u join friendRequest f on f.senderId = u.id where f.receiverId = ?", session["user_id"])
 
     return render_template("requests.html", requests=requests, user=user), 200
