@@ -164,8 +164,8 @@ def search():
             if username.rfind("/'") != -1 or username.rfind("%") != -1:
                 return render_template("search.html",interests=interests, status=2), 400
 
-            username = str("\'" + username + "\'")
-            user_query = ' and u.username like %' + username + '%'
+            username = str(username)
+            user_query = ' and u.username like \'%' + username + '%\''
 
         sql = "select distinct u.id, u.username from users u  left join interests i on i.userId = u.id where not u.id = " + str(session["user_id"])
 
@@ -366,3 +366,14 @@ def delete_friend():
 
         return redirect("/other_profile?userId=" + friend_id)
     
+@app.route("/post", methods=["GET", "POST"])
+def post():
+    if request.method == "POST":
+        post = request.form.get("post")
+
+        if not post:
+            return render_template("apology.html"), 400
+        
+        db.execute("INSERT INTO posts (userId, post, date, time) VALUES (?,?, DATE('now'), TIME('now'))", session["user_id"], post)
+
+        return redirect("/")
