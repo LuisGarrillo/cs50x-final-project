@@ -75,3 +75,8 @@
     color: rgb(206, 75, 75);
     transition: .4s;
 }
+
+.error {
+    color: rgb(206, 75, 75);
+    font-weight: bold;
+}

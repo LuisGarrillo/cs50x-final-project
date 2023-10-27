@@ -20,5 +20,23 @@
                 </div>
             </form>
         </section>
+        <br>
+        <hr>
+        <br>
+        <section>
+            {% if posts %}
+                <h1 class="title">Your friends thoughts</h1>
+                {% for post in posts%}
+                    <div class="background px-4 py-4 mb-2">
+                        <h3>{{ post.username }}</h3>
+                        <p>{{ post.message }}</p>
+                        <br>
+                        <p>Posted: {{ post.date }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h1 class="title">Nothing to see here...</h1>
+            {% endif %}
+        </section>
     </div>
 {% endblock %}
