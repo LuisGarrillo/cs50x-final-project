@@ -27,13 +27,13 @@
 
             <div class="mb-3">
                 {% if status == 1 %}
-                    <p>Username already exists!</p>
+                    <p class="error">Username already exists!</p>
                 {% elif status == 2 %}
-                    <p>Passwords do not match!</p>
+                    <p class="error">Passwords do not match!</p>
                 {% elif status == 3 %}
-                    <p>Complete all fields!</p>
+                    <p class="error">Complete all fields!</p>
                 {% elif status == 4%}
-                    <p>The password doesn't meet the requirements</p>
+                    <p class="error">The password doesn't meet the requirements</p>
                 {% endif %}
             </div>
         </section>
@@ -59,11 +59,11 @@
 
             <div class="mb-3">
                 {% if status == 5 %}
-                    <p>Complete all fields!</p>
+                    <p class="error">Complete all fields!</p>
                 {% elif status == 6 %}
-                    <p>Invalid Email</p>
+                    <p class="error">Invalid Email</p>
                 {% elif status == 7 %}
-                    <p>Invalid Birthday!</p>
+                    <p class="error">Another user already registered that email!</p>
                 {% endif %}
             </div>
 

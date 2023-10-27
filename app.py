@@ -109,15 +109,18 @@ def register():
 
         birthday = request.form.get("birthday")
         gender = request.form.get("gender")
-        email = request.form.get("email")
+        email = request.form.get("email").lower()
 
         if not birthday or not gender or not email:
             return render_template("register.html", status=5), 400
         
         email_valid = email_check(email)
-
         if not email_valid:
             return render_template("register.html", status=6), 400
+        
+        repeated_email = db.execute('select * from users where email = ?', email)
+        if repeated_email:
+            return render_template("register.html", status=7), 400
         
         db.execute("insert into users (username, hash, birthday, gender, email) values(?,?,?,?,?)", user, new_hash, birthday, gender, email)
 
@@ -133,7 +136,9 @@ def register():
 @login_required
 def index():
     try:
-        return render_template("index.html"), 400
+        posts = db.execute("select p.message, p.date, u.username, u.id from posts p join users u on u.id = p.userId where u.id = ? or u.id in (select c.connectionId from connections c where c.userId = ?) order by p.date desc, p.time desc", session["user_id"], session["user_id"])
+        return render_template("index.html", posts=posts), 200
+    
     except Exception:
         return render_template("apology.html"), 400
     
@@ -164,8 +169,8 @@ def search():
             if username.rfind("/'") != -1 or username.rfind("%") != -1:
                 return render_template("search.html",interests=interests, status=2), 400
 
-            username = str("\'" + username + "\'")
-            user_query = ' and u.username like %' + username + '%'
+            username = str(username)
+            user_query = ' and u.username like \'%' + username + '%\''
 
         sql = "select distinct u.id, u.username from users u  left join interests i on i.userId = u.id where not u.id = " + str(session["user_id"])
 
@@ -366,3 +371,17 @@ def delete_friend():
 
         return redirect("/other_profile?userId=" + friend_id)
     
+@app.route("/post", methods=["GET", "POST"])
+def post():
+    if request.method == "POST":
+        post = request.form.get("post")
+
+        if not post:
+            return render_template("apology.html"), 400
+        
+        if len(post) > 1000:
+            return render_template("apology.html"), 400
+        
+        db.execute("INSERT INTO posts (userId, message, date, time) VALUES (?,?, DATE('now'), TIME('now'))", session["user_id"], post)
+
+        return redirect("/")
